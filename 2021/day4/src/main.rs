@@ -1,16 +1,17 @@
-
+use std::fs;
 
 fn main() {
     println!("Hello, world!");
 
-    let bingo = Bingo::parse_input(load("3"));
+    let bingo = Bingo::parse_input(load("4"));
     let winning = bingo.solve();
 
-    winning.0[winning.1].final_out(winning.2).to_string()
+    let solution = winning.0[winning.1].final_out(winning.2).to_string();
+    println!("The solution is: {}", solution)
 }
 
 pub fn load(day: &str) -> String {
-    let file = format!("input_data/input_{}.txt", day);
+    let file = format!("../input_data/input_{}.txt", day);
     fs::read_to_string(&file).unwrap_or_else(|_| panic!("Error reading file {}", file))
 }
 
@@ -30,7 +31,7 @@ struct Board {
 impl Bingo {
     fn parse_input(inp: String) -> Self {
         let mut lines = inp.lines();
-        let numbers = lines.next().unwrap().split(',').map(|x| x.parse::<u32>().unwrap()).collect()
+        let numbers = lines.next().unwrap().split(',').map(|x| x.parse::<u32>().unwrap()).collect();
         let boards = Board::parse(inp);
 
         Bingo {
@@ -46,11 +47,11 @@ impl Bingo {
         let mut take = self.take;
 
         loop {
-            for n in 1..take {
+            for _n in 1..take {
                 let num = nums.remove(0);
                 tick = Board::tick(tick, num);
 
-                if let let Some(i) = Board::check(tick.clone()).first() {
+                if let Some(i) = Board::check(tick.clone()).first() {
                     return (tick, *i, num);
                 };
             }
@@ -63,7 +64,7 @@ impl Board {
     fn parse(inp: String) -> Vec<Self> {
         let mut boards = Vec::new();
         let inp = inp.replace('\r', "");
-        let raw_boards = inp.split('\n\n').skip(1);
+        let raw_boards = inp.split("\n\n").skip(1);
 
         for i in raw_boards {
             let mut data = Vec::new();
@@ -84,7 +85,7 @@ impl Board {
     fn tick(data: Vec<Board>, num: u32) -> Vec<Board> {
         let mut data = data;
         for (board_i, board) in data.clone().iter().enumerate() {
-            (row_i, row) in board.data.iter().enumerate() {
+            for (row_i, row) in board.data.iter().enumerate() {
                 for (col_i, col) in row.iter().enumerate() {
                     if *col == num {
                         data[board_i].checked[row_i][col_i] = true;
@@ -96,9 +97,9 @@ impl Board {
         data
     }
 
-    fn check(data: Vec<Boards>) -> Vec<usize> {
+    fn check(data: Vec<Board>) -> Vec<usize> {
         let mut out = Vec::new();
-        for (i, board) in data.iter().enumerate() {
+        for (_i, board) in data.iter().enumerate() {
             let base_row_count = board.data[0].len();
             let base_col_count = board.data.len();
 
@@ -133,7 +134,7 @@ impl Board {
         out
     }
 
-    fn final_out(&self, winning, u32) -> usize {
+    fn final_out(&self, winning: u32) -> usize {
         let mut sum = 0;
 
         for (row_i, row) in self.data.iter().enumerate() {
