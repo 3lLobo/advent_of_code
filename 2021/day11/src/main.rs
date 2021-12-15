@@ -16,15 +16,32 @@ fn main() {
     println!("{:?}", &board);
 
     let rounds: usize = 100;
-    for r in 1..=100 {
+    let mut solution_p1: u32 = 0;
+    let mut submarine_waits = true;
+    let mut round = 0;
 
+    'all_flash_loop: while submarine_waits {
+        round += 1;
         let last_flashes = board.flash_count.clone();
-        board.print_board(&r);
-        board = Game::play(board.clone(), 1);
-        println!("Finished round {} with {} flashes!", &r, { board.flash_count - last_flashes });
-        board.print_board(&r);
+        board = Game::play(&board, 1);
+        let round_checks = board.flash_count - last_flashes;
+        board.print_board(&round);
+        println!("Finished round {} with {} flashes!\n", &round, &round_checks);
+        
+        if round == 100 {
+            solution_p1 = board.flash_count.clone();
+
+        }
+        if round_checks == 100 {
+            submarine_waits = false;
+            break 'all_flash_loop;
+
+        }
+
     }
-    println!("Day11: Final octopus flash count {} during {} rounds", &board.flash_count, &rounds)
+
+    println!("Day11 p.1: Final octopus flash count up to &incl round {}:\t{}",&rounds, &solution_p1);
+    println!("Day11 p.2: First round to flash all octopuses:\t\t\t{}", &round);
 
 }
 
@@ -160,7 +177,7 @@ struct Game {
 
 impl Game {
 
-    fn play(board: Board, rounds: usize) -> Board {
+    fn play(board: &Board, rounds: usize) -> Board {
 
         let mut board = board.clone();
         board.reset_check();
