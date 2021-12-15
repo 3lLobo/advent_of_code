@@ -16,14 +16,32 @@ fn main() {
     println!("{:?}", &board);
 
     let rounds: usize = 100;
-    for r in 1..=rounds {
+    let mut solution_p1: u32 = 0;
+    let mut submarine_waits = true;
+    let mut round = 0;
 
+    'all_flash_loop: while submarine_waits {
+        round += 1;
         let last_flashes = board.flash_count.clone();
-        board = Game::play(board.clone(), 1);
-        println!("Finished round {} with {} flashes!", &r, { board.flash_count - last_flashes });
+        board = Game::play(&board, 1);
+        let round_checks = board.flash_count - last_flashes;
+        board.print_board(&round);
+        println!("Finished round {} with {} flashes!\n", &round, &round_checks);
+        
+        if round == 100 {
+            solution_p1 = board.flash_count.clone();
+
+        }
+        if round_checks == 100 {
+            submarine_waits = false;
+            break 'all_flash_loop;
+
+        }
 
     }
-    println!("Day11: Final octopus flash count {} during {} rounds", &board.flash_count, &rounds)
+
+    println!("Day11 p.1: Final octopus flash count up to &incl round {}:\t{}",&rounds, &solution_p1);
+    println!("Day11 p.2: First round to flash all octopuses:\t\t\t{}", &round);
 
 }
 
@@ -72,21 +90,24 @@ impl Board {
         }
     }
 
-    // fn print_board(&mut self) {
+    fn print_board(&mut self, round: &usize) {
 
-    //     let mut to_print = String::new();
-    //     to_print = "\n";
+        let mut to_print = String::new();
 
-    //     for row in self.vals.iter() {
-    //         for val in row.iter() {
-    //             to_print.push_str(&(val.as_char()));
+        for row in self.vals.iter() {
+            for val in row.iter() {
+                if *val == 0 {
+                    to_print.push_str("- ");
+                } else {
+                    to_print += &format!("{} ", val);
+                }
 
-    //         }
-    //         to_print.push_str("\n");
+            }
+            to_print.push_str("\n");
             
-    //     }
-    //     println!("{}", &round, to_print);
-    // }
+        }
+        println!("\n The Board in round {}:\n{}", &round, to_print);
+    }
 
     fn get_range(val: usize) -> (usize, usize) {
         
@@ -118,8 +139,9 @@ impl Board {
             // println!("Octopus at x{} y{} alredy flashed this round!", &i_row, &i_col);
 
         } else {
+            self.flash_count += 1;
             self.check[i_row][i_col] = true;
-            println!("Flashing x{} y{}", &i_row, &i_col);
+            // println!("Flashing x{} y{}", &i_row, &i_col);
 
             let (x_start, x_stop) = Board::get_range(i_row);
             let (y_start, y_stop) = Board::get_range(i_col);
@@ -134,7 +156,6 @@ impl Board {
                         
                         if self.vals[x][y] > 9 {
                             self.vals[x][y] = 0;
-                            self.flash_count += 1;
                             self.flash(&x, &y);
                         }
                     }
@@ -156,7 +177,7 @@ struct Game {
 
 impl Game {
 
-    fn play(board: Board, rounds: usize) -> Board {
+    fn play(board: &Board, rounds: usize) -> Board {
 
         let mut board = board.clone();
         board.reset_check();
