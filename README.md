@@ -4,3 +4,10 @@
 
 
 Solutions to the [advent of code](https://adventofcode.com/ "Click meee!!!")  challenge.
+
+## How to run
+
+```bash
+bash run.sh
+```
+Then follow the prompts.
