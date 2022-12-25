@@ -237,6 +237,11 @@ use std::io::Write;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
+use progress_bar::{
+    finalize_progress_bar, init_progress_bar, set_progress_bar_action,
+    set_progress_bar_progression, Color, Style,
+};
+
 //  Class for the blizzards
 pub struct Blizzards {
     position: (i32, i32),
@@ -371,6 +376,13 @@ impl Valley {
             valley_maps: Vec::from([map]),
         };
         valley
+    }
+
+    fn flip_start_target(&mut self) {
+        let start = self.start;
+        let target = self.target;
+        self.start = target;
+        self.target = start;
     }
 
     //  create the blizzards
@@ -585,9 +597,9 @@ impl PathNode {
 }
 
 // Lee algorithm for a moving maze
-fn blizzard_lee_algo(valley: &mut Valley) -> Vec<(i32, i32)> {
+fn blizzard_lee_algo(valley: &mut Valley, start_minutes: &i32) -> Vec<(i32, i32)> {
     // Start at time 0
-    let mut minutes = 0;
+    let mut minutes = start_minutes.clone();
     //  Create the start node
     let start_node = PathNode::new(valley.start, minutes, Option::None, valley.target);
     //  Create the queue
@@ -595,6 +607,10 @@ fn blizzard_lee_algo(valley: &mut Valley) -> Vec<(i32, i32)> {
     //  Add the start node to the queue
     queue.push_back(start_node);
     let mut loop_count: u32 = 0;
+    // Progress bar
+    let progress_max = valley.boarders.1 * valley.boarders.3;
+    init_progress_bar(progress_max as usize);
+    set_progress_bar_action("Snacqs 😋", Color::Cyan, Style::Bold);
     //  Loop through the queue
     while !queue.is_empty() {
         //  Get the current node
@@ -602,6 +618,7 @@ fn blizzard_lee_algo(valley: &mut Valley) -> Vec<(i32, i32)> {
         minutes = current_node.minutes;
         //  Check if the current node is the target
         if current_node.is_final {
+            finalize_progress_bar();
             //  Return the path
             return current_node.get_path();
         }
@@ -631,16 +648,38 @@ fn blizzard_lee_algo(valley: &mut Valley) -> Vec<(i32, i32)> {
         }
         // Print status
         loop_count += 1;
-        println!(
-            "Minutes: {} Queue: {} Loops: {}",
-            minutes,
-            queue.len(),
-            loop_count
-        );
+        // println!(
+        //     "Minutes: {} Queue: {} Loops: {}",
+        //     minutes,
+        //     queue.len(),
+        //     loop_count
+        // );
+        // print_progress_bar_info(
+        //     "Minutes:",
+        //     &minutes.to_string(),
+        //     Color::LightBlue,
+        //     Style::Normal,
+        // );
+        // print_progress_bar_info(
+        //     "Queue:",
+        //     &queue.len().to_string(),
+        //     Color::LightBlue,
+        //     Style::Normal,
+        // );
+        // let progress = get_progress(&loop_count, &minutes);
+        set_progress_bar_progression(minutes as usize);
+        // set_progress_bar_max(loop_count as usize)
     }
+    finalize_progress_bar();
     //  Return an empty array
     Vec::new()
 }
+
+// fn get_progress(loop_count: &u32, minutes: &i32) -> u32 {
+//     let divident = loop_count.clone() + minutes.clone() as u32;
+//     let progress = (loop_count.clone() as f32 / divident as f32) * 100.0;
+//     progress as u32
+// }
 
 //  Main function
 fn main() {
@@ -650,14 +689,30 @@ fn main() {
     let mut valley = Valley::new(input_path);
     valley.create_blizzards();
     //  Get the path
-    let positions = blizzard_lee_algo(&mut valley);
+    let positions = blizzard_lee_algo(&mut valley, &0);
     //  Print the path
     println!("Path: {:?}", &positions);
-    //  Print the length of the path
-    println!(
-        "Steps to get through the Blizzard maze: {}",
-        &positions.len() - 2
-    );
+    //  Print the answer to part1
+    let steps1 = &positions.len() - 2;
+    println!("Steps to get through the Blizzard maze: {}", &steps1);
     // Save Path
     valley.print_map(&positions);
+
+    // Part 2
+    let mut minutes = steps1 as i32 + 1;
+    valley.flip_start_target();
+
+    let positions_bacq = blizzard_lee_algo(&mut valley, &minutes);
+    //
+    let steps2 = &positions_bacq.len() - 1;
+    println!("Steps to go bacq through the Blizzard maze: {}", &steps2);
+
+    valley.flip_start_target();
+    minutes += steps2 as i32;
+    let positions_again = blizzard_lee_algo(&mut valley, &minutes);
+    let steps3 = &positions_again.len() - 1;
+    println!("Steps to get through the Blizzard maze again: {}", &steps3);
+    //  Print the answer to part2
+    let steps = steps1 + steps2 + steps3;
+    println!("Total steps in the Blizzard maze: {}", &steps);
 }
