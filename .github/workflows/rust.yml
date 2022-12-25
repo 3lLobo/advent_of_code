@@ -5,39 +5,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build 2021/day1
-        run: cd 2021/day1 && cargo build
-      - name: Test 2021/day1
-        run: cd 2021/day1 && cargo test
       - name: Build 2021/day11
-        run: cd 2021/day11 && cargo build
+        run: cd ./2021/day11 && cargo build
       - name: Test 2021/day11
-        run: cd 2021/day11 && cargo test
-      - name: Build 2021/day2
-        run: cd 2021/day2 && cargo build
-      - name: Test 2021/day2
-        run: cd 2021/day2 && cargo test
+        run: cd ./2021/day11 && cargo test
       - name: Build 2021/day3
-        run: cd 2021/day3 && cargo build
+        run: cd ./2021/day3 && cargo build
       - name: Test 2021/day3
-        run: cd 2021/day3 && cargo test
+        run: cd ./2021/day3 && cargo test
       - name: Build 2021/day4
-        run: cd 2021/day4 && cargo build
+        run: cd ./2021/day4 && cargo build
       - name: Test 2021/day4
-        run: cd 2021/day4 && cargo test
+        run: cd ./2021/day4 && cargo test
       - name: Build 2022/day13
-        run: cd 2022/day13 && cargo build
+        run: cd ./2022/day13 && cargo build
       - name: Test 2022/day13
-        run: cd 2022/day13 && cargo test
+        run: cd ./2022/day13 && cargo test
       - name: Build 2022/day14
-        run: cd 2022/day14 && cargo build
+        run: cd ./2022/day14 && cargo build
       - name: Test 2022/day14
-        run: cd 2022/day14 && cargo test
+        run: cd ./2022/day14 && cargo test
       - name: Build 2022/day22
-        run: cd 2022/day22 && cargo build
+        run: cd ./2022/day22 && cargo build
       - name: Test 2022/day22
-        run: cd 2022/day22 && cargo test
+        run: cd ./2022/day22 && cargo test
       - name: Build 2022/day24
-        run: cd 2022/day24 && cargo build
+        run: cd ./2022/day24 && cargo build
       - name: Test 2022/day24
-        run: cd 2022/day24 && cargo test
+        run: cd ./2022/day24 && cargo test

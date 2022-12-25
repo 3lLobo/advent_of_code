@@ -31,7 +31,7 @@ echo "      - uses: actions/checkout@v2" >>$RUSTYML
 # Add a build and test for each day
 for day in "${days[@]}"; do
   echo "      - name: Build $day" >>$RUSTYML
-  echo "        run: cd $day && cargo build" >>$RUSTYML
+  echo "        run: cd ./$day && cargo build" >>$RUSTYML
   echo "      - name: Test $day" >>$RUSTYML
-  echo "        run: cd $day && cargo test" >>$RUSTYML
+  echo "        run: cd ./$day && cargo test" >>$RUSTYML
 done
