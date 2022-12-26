@@ -33,3 +33,7 @@ jobs:
         run: cd ./2022/day24 && cargo build
       - name: Test 2022/day24
         run: cd ./2022/day24 && cargo test
+      - name: Build 2022/day25
+        run: cd ./2022/day25 && cargo build
+      - name: Test 2022/day25
+        run: cd ./2022/day25 && cargo test
